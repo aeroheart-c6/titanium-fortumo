@@ -7,46 +7,48 @@
 	<iphone>
 	</iphone>
     
-	<android xmlns:android="http://schemas.android.com/apk/res/android">
-        <permission android:name="com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION"
-                    android:label="Read Payment Status"
-                    android:protectionLevel="signature"/>
-        
-        <application>
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_Received"/>
-            </intent-filter>
+	<android xmlns:android="http://schemas.android.com/apk/res/android"> 
+        <manifest>
+            <permission android:name="com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION"
+                        android:label="Read Payment Status"
+                        android:protectionLevel="signature"/>
             
-            <receiver android:name=".PaymentStatusReceiver"
-                      android:permission="com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION">
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+            <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+            <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+            <uses-permission android:name="android.permission.SEND_SMS"/>
+            <uses-permission android:name="com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION"/>
+            
+            <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+            
+            <application>
                 <intent-filter>
-                    <action android:name="mp.info.PAYMENT_STATUS_CHANGED"/>
+                    <action android:name="android.provider.Telephony.SMS_Received"/>
                 </intent-filter>
-            </receiver>
-            
-            <receiver android:name="mp.MpSMSReceiver">
-                <intent-filter>
-                    <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-                </intent-filter>
-            </receiver>
-            
-            <service android:name="mp.MpService"/>
-            <service android:name="mp.StatusUpdateService"/>
-            
-            <activity android:name="mp.MpActivity"
-                      android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                      android:configChanges="orientation|keyboardHidden|screenSize"/>
-            
-            <activity android:name=".PaymentActivity"/>
-        </application>
-        
-        <uses-permission android:name="android.permission.INTERNET"/>
-        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-        <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-        <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-        <uses-permission android:name="android.permission.SEND_SMS"/>
-        <uses-permission android:name="com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION"/>
-        
-        <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+                
+                <receiver android:name=".PaymentStatusReceiver"
+                          android:permission="com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION">
+                    <intent-filter>
+                        <action android:name="mp.info.PAYMENT_STATUS_CHANGED"/>
+                    </intent-filter>
+                </receiver>
+                
+                <receiver android:name="mp.MpSMSReceiver">
+                    <intent-filter>
+                        <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                    </intent-filter>
+                </receiver>
+                
+                <service android:name="mp.MpService"/>
+                <service android:name="mp.StatusUpdateService"/>
+                
+                <activity android:name="mp.MpActivity"
+                          android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                          android:configChanges="orientation|keyboardHidden|screenSize"/>
+                
+                <activity android:name=".PaymentActivity"/>
+            </application>
+        </manifest>
 	</android>
 </ti:module>

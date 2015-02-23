@@ -6,7 +6,7 @@ version: 0.0.0
 apiversion: 2
 architectures: armeabi armeabi-v7a x86
 description: ti.fortumo
-author: Your Name
+author: Jan-Raphael Chua
 license: Specify your license
 copyright: Copyright (c) 2015 by Your Company
 

@@ -8,3 +8,4 @@ android/build/
 android/dist/
 android/libs/
 
+android/.ant-targets-build.xml
