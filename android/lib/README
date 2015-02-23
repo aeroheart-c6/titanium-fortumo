@@ -1,0 +1,5 @@
+You can place any .jar dependencies in this directory and they will be included
+when your module is being compiled.
+
+Included Jar Versions:
+forutmo-inapp: 9.3.0

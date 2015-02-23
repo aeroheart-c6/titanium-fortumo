@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 0.0.0
+apiversion: 2
+architectures: armeabi armeabi-v7a x86
+description: ti.fortumo
+author: Your Name
+license: Specify your license
+copyright: Copyright (c) 2015 by Your Company
+
+# these should not be edited
+name: ti.fortumo
+moduleid: com.aeroheart.ti.fortumo
+guid: 22d53433-cc2c-48ee-8bb7-6ba642e5e6c7
+platform: android
+minsdk: 3.5.0.GA

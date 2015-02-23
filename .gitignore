@@ -1,0 +1,10 @@
+# auto-generated files
+.DS_Store
+*.swp
+
+# build files
+android/bin/
+android/build/
+android/dist/
+android/libs/
+
