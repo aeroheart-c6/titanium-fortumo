@@ -38,9 +38,13 @@ public class TiFortumoModule extends KrollModule {
     // @Kroll.constant public static final String EXTERNAL_NAME = value;
     
     @Kroll.onAppCreate
-    public static void onAppCreate(TiApplication app) {
-        Log.d(TiFortumoModule.LCAT_TAG, "inside onAppCreate");
-        // put module init code that needs to run when the application is created
+    public static void onAppCreate(TiApplication application) {
+        TiProperties properties = application.getAppProperties();
+        
+        MpUtils.enablePaymentBroadcast(application.getCurrentActivity(), properties.getString(
+            "com.aeroheart.ti.fortumo.properties.broadcastPermission",
+            "com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION"
+        ));
     }
     
     public TiFortumoModule() {
@@ -61,17 +65,27 @@ public class TiFortumoModule extends KrollModule {
         this.setup         = false;
     }
     
+    /**
+     * Note that please specify an app property in the tiapp.xml with the name
+     * "com.aeroheart.ti.fortumo.properties.broadcastPermission" so that the code here can
+     * reference it.
+     * 
+     * @param serviceId
+     * @param serviceSecret
+     * @param appSecret
+     */
     @Kroll.method
     public void setup(String serviceId, String serviceSecret, String appSecret) {
         this.serviceId     = serviceId;
         this.serviceSecret = serviceSecret;
         this.appSecret     = appSecret;
-        this.setup         = true;
+        
+        this.setup = true;
     }
     
     @Kroll.method
     public void purchase(KrollDict product) {
-        TiActivitySupport support = (TiActivitySupport)this.getActivity();
+        TiActivitySupport activity = (TiActivitySupport)this.getActivity();
         Intent intent = new Intent();
         
         intent
@@ -81,12 +95,11 @@ public class TiFortumoModule extends KrollModule {
             .putExtra(PaymentActivity.EXTRA_SERVICE_ID, this.serviceId)
             .putExtra(PaymentActivity.EXTRA_APP_SECRET, this.appSecret);
         
-        support.launchActivityForResult(
+        activity.launchActivityForResult(
             intent,
             PaymentActivity.CODE_REQUEST_PAYMENT,
             new TiFortumoModule.PaymentHandler()
         );
-        
     }
     
     protected int getTypeConstant(String type) {
