@@ -119,11 +119,16 @@ public class PaymentActivity extends mp.PaymentActivity implements TiActivitySup
         public void onReceive(Context context, Intent intent) {
             PaymentActivity self = PaymentActivity.this;
             Bundle extras = intent.getExtras();
-            int status = extras.getInt("billing_status");
             
-            if (status == MpUtils.MESSAGE_STATUS_BILLED) {
-                self.setResult(PaymentActivity.CODE_RESULT_BILLED, new Intent());
-                self.finish();
+            BroadcastMediator.runBroadcastListeners(context, intent);
+            
+            switch (extras.getInt("billing_status")) {
+                case MpUtils.MESSAGE_STATUS_NOT_SENT:
+                case MpUtils.MESSAGE_STATUS_FAILED:
+                case MpUtils.MESSAGE_STATUS_BILLED:
+                    self.finish();
+                    break;
+                default:;
             }
         }
     }

@@ -13,12 +13,11 @@ import mp.MpUtils;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.titanium.util.TiActivityResultHandler;
-import org.appcelerator.titanium.util.TiActivitySupport;
+import org.appcelerator.titanium.TiProperties;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 
@@ -38,18 +37,27 @@ public class TiFortumoModule extends KrollModule {
     // @Kroll.constant public static final String EXTERNAL_NAME = value;
     
     @Kroll.onAppCreate
-    public static void onAppCreate(TiApplication application) {
-        TiProperties properties = application.getAppProperties();
-        
-        MpUtils.enablePaymentBroadcast(application.getCurrentActivity(), properties.getString(
-            "com.aeroheart.ti.fortumo.properties.broadcastPermission",
-            "com.aeroheart.ti.fortumo.permissions.PAYMENT_BROADCAST_PERMISSION"
-        ));
-    }
+    public static void onAppCreate(TiApplication application) {}
     
+    /**
+     * Note that please specify an app property in the tiapp.xml with the name
+     * "com.aeroheart.ti.fortumo.properties.broadcastPermission" so that the code here can
+     * reference it.
+     */
     public TiFortumoModule() {
         super();
         this.reset();
+        
+        TiApplication application = TiApplication.getInstance();
+        TiProperties  properties  = application.getAppProperties();
+        String        permission  = properties.getString(
+            "com.aeroheart.ti.fortumo.properties.broadcastPermission",
+            "com.aeroheart.ti.fortumo.permission.PAYMENT_BROADCAST_PERMISSION"
+        );
+        
+        BroadcastMediator.addBroadcastListener(new TiFortumoModule.BroadcastListener());
+        
+        MpUtils.enablePaymentBroadcast(application.getCurrentActivity(), permission.trim());
     }
     
     /*
@@ -65,15 +73,6 @@ public class TiFortumoModule extends KrollModule {
         this.setup         = false;
     }
     
-    /**
-     * Note that please specify an app property in the tiapp.xml with the name
-     * "com.aeroheart.ti.fortumo.properties.broadcastPermission" so that the code here can
-     * reference it.
-     * 
-     * @param serviceId
-     * @param serviceSecret
-     * @param appSecret
-     */
     @Kroll.method
     public void setup(String serviceId, String serviceSecret, String appSecret) {
         this.serviceId     = serviceId;
@@ -85,21 +84,15 @@ public class TiFortumoModule extends KrollModule {
     
     @Kroll.method
     public void purchase(KrollDict product) {
-        TiActivitySupport activity = (TiActivitySupport)this.getActivity();
-        Intent intent = new Intent();
-        
-        intent
+        Activity activity = this.getActivity();
+        Intent intent = new Intent(activity, PaymentActivity.class)
             .putExtra(PaymentActivity.EXTRA_PRODUCT_ID, product.getString("id"))
             .putExtra(PaymentActivity.EXTRA_PRODUCT_NAME, product.getString("name"))
-            .putExtra(PaymentActivity.EXTRA_PRODUCT_TYPE, product.getString("type"))
+            .putExtra(PaymentActivity.EXTRA_PRODUCT_TYPE, this.getTypeConstant(product.getString("type")))
             .putExtra(PaymentActivity.EXTRA_SERVICE_ID, this.serviceId)
             .putExtra(PaymentActivity.EXTRA_APP_SECRET, this.appSecret);
         
-        activity.launchActivityForResult(
-            intent,
-            PaymentActivity.CODE_REQUEST_PAYMENT,
-            new TiFortumoModule.PaymentHandler()
-        );
+        activity.startActivity(intent);
     }
     
     protected int getTypeConstant(String type) {
@@ -111,15 +104,9 @@ public class TiFortumoModule extends KrollModule {
             return MpUtils.PRODUCT_TYPE_SUBSCRIPTION;
         else
             return -1;
-            
     }
     
-    /*
-     ***********************************************************************************************
-     * Properties
-     ***********************************************************************************************
-     */
-    @Kroll.setProperty
+    @Kroll.method
     public boolean isSetup() {
         return this.setup;
     }
@@ -130,13 +117,10 @@ public class TiFortumoModule extends KrollModule {
      * Inner Classes
      ***********************************************************************************************
      */
-    protected class PaymentHandler implements TiActivityResultHandler {
-        public void onResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            
-        }
-        
-        public void onError(Activity activity, int requestCode, Exception exception) {
-            
+    protected class BroadcastListener implements BroadcastMediator.Listener {
+        public void onReceive(Context context, Intent intent) {
+            LogUtils.debug(TiFortumoModule.LCAT_TAG, String.valueOf(intent.getIntExtra("billing_status", -1)));
+            LogUtils.debug(TiFortumoModule.LCAT_TAG, "here!");
         }
     }
 }
