@@ -68,7 +68,7 @@ public class PaymentActivity extends mp.PaymentActivity implements TiActivitySup
     
     protected TiActivitySupportHelper getSupportHelper() {
         if (this.supportHelper == null) {
-            this.supportHelper   = new TiActivitySupportHelper(this);
+            this.supportHelper = new TiActivitySupportHelper(this);
             this.supportHelperId = TiActivitySupportHelpers.addSupportHelper(this.supportHelper);
         }
         

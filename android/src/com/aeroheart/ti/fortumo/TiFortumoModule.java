@@ -8,17 +8,15 @@
 package com.aeroheart.ti.fortumo;
 
 
-import mp.MpUtils;
-
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.titanium.TiProperties;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import mp.MpUtils;
 
 
 @Kroll.module(name = "TiFortumo", id = "com.aeroheart.ti.fortumo")
@@ -39,25 +37,15 @@ public class TiFortumoModule extends KrollModule {
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication application) {}
     
-    /**
-     * Note that please specify an app property in the tiapp.xml with the name
-     * "com.aeroheart.ti.fortumo.properties.broadcastPermission" so that the code here can
-     * reference it.
-     */
     public TiFortumoModule() {
         super();
         this.reset();
         
-        TiApplication application = TiApplication.getInstance();
-        TiProperties  properties  = application.getAppProperties();
-        String        permission  = properties.getString(
-            "com.aeroheart.ti.fortumo.properties.broadcastPermission",
-            "com.aeroheart.ti.fortumo.permission.PAYMENT_BROADCAST_PERMISSION"
-        );
-        
         BroadcastMediator.addBroadcastListener(new TiFortumoModule.BroadcastListener());
-        
-        MpUtils.enablePaymentBroadcast(application.getCurrentActivity(), permission.trim());
+        MpUtils.enablePaymentBroadcast(
+    		TiApplication.getInstance().getCurrentActivity(),
+    		"com.aeroheart.ti.fortumo.permission.PAYMENT_BROADCAST_PERMISSION"
+		);
     }
     
     /*
@@ -67,18 +55,17 @@ public class TiFortumoModule extends KrollModule {
      */
     @Kroll.method
     public void reset() {
-        this.serviceId     = null;
+        this.serviceId = null;
         this.serviceSecret = null;
-        this.appSecret     = null;
-        this.setup         = false;
+        this.appSecret = null;
+        this.setup = false;
     }
     
     @Kroll.method
     public void setup(String serviceId, String serviceSecret, String appSecret) {
-        this.serviceId     = serviceId;
+        this.serviceId = serviceId;
         this.serviceSecret = serviceSecret;
-        this.appSecret     = appSecret;
-        
+        this.appSecret = appSecret;
         this.setup = true;
     }
     
@@ -118,9 +105,6 @@ public class TiFortumoModule extends KrollModule {
      ***********************************************************************************************
      */
     protected class BroadcastListener implements BroadcastMediator.Listener {
-        public void onReceive(Context context, Intent intent) {
-            LogUtils.debug(TiFortumoModule.LCAT_TAG, String.valueOf(intent.getIntExtra("billing_status", -1)));
-            LogUtils.debug(TiFortumoModule.LCAT_TAG, "here!");
-        }
+        public void onReceive(Context context, Intent intent) {}
     }
 }
